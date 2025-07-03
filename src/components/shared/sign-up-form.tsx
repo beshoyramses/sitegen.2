@@ -3,12 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUpUser } from "@/lib/actions/user.actions"; // Changed to signUpUser
+import { signUpUser } from "@/lib/actions/user.actions"; 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, Mail, Lock, User } from "lucide-react"; // Added User icon
-import Link from "next/link";
+import { Loader2, Mail, Lock, User } from "lucide-react"; 
 
 interface FormState {
   success: boolean;

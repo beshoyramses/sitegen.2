@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { signInUser } from "@/lib/actions/user.actions";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
@@ -42,7 +41,6 @@ export function SignInForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const formRef = useRef<HTMLFormElement>(null);
-  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
   const initialState: FormState = {
@@ -70,7 +68,6 @@ export function SignInForm() {
       className="space-y-6"
     >
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
-      <input type="hidden" name="remember" value={rememberMe.toString()} />
 
       <div className="space-y-4">
         <div className="space-y-1">
@@ -122,20 +119,6 @@ export function SignInForm() {
             </p>
           )}
         </div>
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="remember"
-          checked={rememberMe}
-          onCheckedChange={(checked: boolean) => setRememberMe(checked)}
-        />
-        <label
-          htmlFor="remember"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Remember me
-        </label>
       </div>
 
       <SignInButton />

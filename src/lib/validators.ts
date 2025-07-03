@@ -15,6 +15,5 @@ export const websiteSchema = z.object({
   name: z.string().min(2, "Name is too short"),
   domain: z.string(),
   description: z.string().optional(),
-  faviconUrl: z.string().url("Invalid favicon URL").optional(),
-  imageUrl: z.string().url("Invalid image URL").optional(),
+  imageUrl: z.string().optional(),
 });

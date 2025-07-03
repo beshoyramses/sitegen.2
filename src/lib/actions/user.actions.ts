@@ -118,3 +118,11 @@ export async function signInUser(prevState: any, formData: FormData): Promise<Ac
     return { success: false, message: "An unexpected error occurred." };
   }
 }
+
+export async function getUserById(userId: string) {
+  const userData = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+  return userData;
+}

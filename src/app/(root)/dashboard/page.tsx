@@ -15,6 +15,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+
   useEffect(() => {
     const fetchWebsites = async () => {
       try {
@@ -43,6 +45,7 @@ export default function DashboardPage() {
       name: website.name,
       domain: website.domain,
       status: "published",
+      imageUrl: website.imageUrl,
       updatedAt: website.updatedAt,
       visitors: "0",
       template: "Custom"

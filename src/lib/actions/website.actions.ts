@@ -73,7 +73,6 @@ export async function getUserWebsites(): Promise<{
   message?: string;
 }> {
   try {
-    // Get authenticated user
     const userId = await getUserId();
     
     if (!userId) {

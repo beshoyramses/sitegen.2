@@ -148,23 +148,13 @@ export function NewSiteForm() {
             />
             
             <FormField
-              id="faviconUrl"
-              name="faviconUrl"
-              label="Favicon URL"
-              placeholder="https://example.com/favicon.ico"
-              type="url"
-              icon={Star}
-              fieldErrors={formState?.fieldErrors}
-            />
-            
-            <FormField
               id="imageUrl"
               name="imageUrl"
               label="Image URL"
               placeholder="https://example.com/screenshot.jpg"
-              type="url"
               icon={Image}
               fieldErrors={formState?.fieldErrors}
+              required={false}
             />
 
             <div className="flex justify-end gap-3 mt-6 items-center">

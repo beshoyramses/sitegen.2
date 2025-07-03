@@ -4,56 +4,57 @@ import FeaturesSection from "@/components/landing/FeaturesSection";
 import HeroSection from "@/components/landing/HeroSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
-import { LightningBoltIcon } from "@radix-ui/react-icons";
+import { RocketIcon, ShieldCheckIcon, WrenchIcon, ZapIcon } from "lucide-react";
 
 export default function Home() {
   const features = [
     {
-      icon: <LightningBoltIcon className="h-6 w-6" />,
-      title: "Instant Deployment",
+      icon: <RocketIcon className="h-6 w-6" />,
+      title: "Blazing Fast Deployment",
       description:
-        "From idea to live site in under 60 seconds with AI-powered generation",
+        "Launch your website in seconds with optimized CI/CD workflows Perfectly.",
     },
     {
-      icon: <LightningBoltIcon className="h-6 w-6" />,
-      title: "Instant Deployment",
+      icon: <WrenchIcon className="h-6 w-6" />,
+      title: "Customizable Templates",
       description:
-        "From idea to live site in under 60 seconds with AI-powered generation",
+        "Start from AI-generated layouts and easily tweak anything to fit your brand.",
     },
     {
-      icon: <LightningBoltIcon className="h-6 w-6" />,
-      title: "Instant Deployment",
+      icon: <ShieldCheckIcon className="h-6 w-6" />,
+      title: "Secure by Default",
       description:
-        "From idea to live site in under 60 seconds with AI-powered generation",
+        "Built-in SSL, DDoS protection, and session security — no setup required.",
     },
     {
-      icon: <LightningBoltIcon className="h-6 w-6" />,
-      title: "Instant Deployment",
+      icon: <ZapIcon className="h-6 w-6" />,
+      title: "AI-Powered Generation",
       description:
-        "From idea to live site in under 60 seconds with AI-powered generation",
+        "Describe your idea in a sentence, and let AI build the foundation for you.",
     },
   ];
 
   const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Product Manager",
-      content:
-        "Sitegen cut our development time by 80%. We went from concept to launch in one afternoon!",
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Product Manager",
-      content:
-        "Sitegen cut our development time by 80%. We went from concept to launch in one afternoon!",
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Product Manager",
-      content:
-        "Sitegen cut our development time by 80%. We went from concept to launch in one afternoon!",
-    },
-  ];
+  {
+    name: "Emily Carter",
+    role: "Startup Founder",
+    content:
+      "Sitegen helped us launch a polished landing page in less than an hour. It felt like magic!",
+  },
+  {
+    name: "James Lee",
+    role: "Frontend Engineer",
+    content:
+      "The AI-generated layouts are surprisingly solid. Saved me hours of boilerplate setup.",
+  },
+  {
+    name: "Ava Nguyen",
+    role: "Marketing Director",
+    content:
+      "I could build and customize pages without writing a line of code. Total game changer.",
+  },
+];
+
 
   return (
     <>
