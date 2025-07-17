@@ -11,9 +11,10 @@ export const signUpFormSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export const websiteSchema = z.object({
-  name: z.string().min(2, "Name is too short"),
-  domain: z.string(),
+export const insertWebsiteSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  domain: z.string().min(1, "Domain is required"),
   description: z.string().optional(),
-  imageUrl: z.string().optional(),
+  imageUrl: z.string().url("Invalid image URL"),
+  userId: z.string().uuid(),
 });

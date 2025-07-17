@@ -31,14 +31,16 @@ model User {
 }
 
 model Website {
-  id          String   @id @default(cuid())
-  name        String
-  domain      String
-  description String?
-  faviconUrl  String?
-  imageUrl    String?
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(uuid()) @db.Uuid
+  name             String   @unique(map: "website_name_idx")
+  domain           String   @unique(map: "website_url_idx")
+  description      String?
+  imageUrl         String?
+  conversionRate   Float?   @default(0.0)
+  views            Int      @default(0)
+  averageTimeSpent Int?     @default(0)
+  createdAt        DateTime @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime @updatedAt
+  userId           String   @db.Uuid
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

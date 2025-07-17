@@ -1,106 +1,97 @@
-"use server";
+"use server"
 
 import { z } from "zod";
-import { websiteSchema } from "@/lib/validators";
+import { insertWebsiteSchema } from "../validators";
+import { verifiySession } from "../session";
 import prisma from "@/db/prisma";
-import { getUserId } from "../session";
-import { redirect } from "next/navigation";
 
-export type WebsiteFormInput = z.infer<typeof websiteSchema>;
-
-export type WebsiteData = {
-  id: string;
-  name: string;
-  domain: string;
-  description: string | null;
-  faviconUrl: string | null;
-  imageUrl: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-
-export type FormState =
-  | { success: true; message: string }
-  | { success: false; message: string; fieldErrors?: Record<string, string[]> };
-
-export async function addWebsite(prevState ,formData: FormData): Promise<FormState> {
-  const userId = await getUserId();
-  if (!userId) redirect("/sing-in");
-
-  const data = {
-    name: formData.get("name"),
-    domain: formData.get("domain"),
-    description: formData.get("description"),
-    faviconUrl: formData.get("faviconUrl"),
-    imageUrl: formData.get("imageUrl"),
-  };
-
-  const result = websiteSchema.safeParse(data);
-
-  if (!result.success) {
-    return {
-      success: false,
-      message: "Validation failed",
-      fieldErrors: result.error.flatten().fieldErrors,
-    };
+export async function createWebsite(
+  WebsiteData: z.infer<typeof insertWebsiteSchema>
+) {
+  const session = await verifiySession();
+  if (!session.userId) {
+    throw new Error("User not authenticated");
   }
 
-  try {
-    await prisma.website.create({
-      data: {
-        ...result.data,
-        userId,
-      },
-    });
+  const validatedData = insertWebsiteSchema.parse({
+    ...WebsiteData,
+    userId: session.userId,
 
-    return {
-      success: true,
-      message: "Website created successfully",
-    };
-  } catch (error) {
-    console.error("Error creating website:", error);
-    return {
-      success: false,
-      message: "Server error while creating website",
-    };
+  });
+
+  if (!validatedData) {
+    throw new Error("Invalid website data");
   }
+
+  const website = await prisma.website.create({
+    data: validatedData,
+  });
+
+  if (!website) {
+    return { success: false, message: "Failed to create website" };
+  }
+
+  return { success: true, message: "Website created successfully" };
 }
 
-export async function getUserWebsites(): Promise<{
-  success: boolean;
-  data?: WebsiteData[];
-  message?: string;
-}> {
-  try {
-    const userId = await getUserId();
-    
-    if (!userId) {
-      return { success: false, message: "User not authenticated" };
+export async function getWebsites() {
+    const session = await verifiySession();
+    if (!session.userId) {
+        throw new Error("User not authenticated");
     }
-
-    // Fetch websites for the current user
+    
     const websites = await prisma.website.findMany({
-      where: { userId },
-      select: {
-        id: true,
-        name: true,
-        domain: true,
-        description: true,
-        faviconUrl: true,
-        imageUrl: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        where: { userId: session.userId },
+        select: {
+          name: true,
+          userId: true,
+          description: true,
+          domain: true,
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          imageUrl: true, 
 
-    return { success: true, data: websites };
-  } catch (error) {
-    console.error("Failed to fetch websites:", error);
-    return {
-      success: false,
-      message: "Database error: Failed to fetch websites",
-    };
+        }
+    });
+    
+    return websites;
+}
+
+export async function getWebsiteContent(websiteId: string) {
+  const session = await verifiySession();
+  if (!session.userId) {
+    throw new Error("User not authenticated");
   }
+
+  const website = await prisma.website.findFirst({
+    where: { id: websiteId, userId: session.userId },
+  });
+
+  if (!website) {
+    throw new Error("Website not found or access denied");
+  }
+
+  return website;
+}
+
+export async function deleteWebsite(websiteId: string) {
+  const session = await verifiySession();
+  if (!session.userId) {
+    throw new Error("User not authenticated");
+  }
+
+  const website = await prisma.website.findUnique({
+    where: { id: websiteId, userId: session.userId },
+  });
+
+  if (!website) {
+    throw new Error("Website not found or access denied");
+  }
+
+  await prisma.website.delete({
+    where: { id: websiteId },
+  });
+
+  return { success: true, message: "Website deleted successfully" };
 }

@@ -1,4 +1,3 @@
-import { websiteSchema } from "@/lib/validators";
 import { ReactNode } from 'react';
 import { z } from "zod";
 import { 
@@ -11,9 +10,6 @@ import {
   Video,
   MapPin
 } from 'lucide-react';
-
-
-export type WebsiteFormInput = z.infer<typeof websiteSchema>;
 
 export interface Component {
   id: string;
@@ -62,3 +58,17 @@ export const componentTypes: ComponentType[] = [
   { id: 'video', name: 'Video Embed', icon: <Video size={20} /> },
   { id: 'map', name: 'Map', icon: <MapPin size={20} /> },
 ];
+
+export type Website = {
+  id: string;
+  name: string;
+  domain: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  conversionRate?: number | null;
+  views?: number | null;
+  averageTimeSpent?: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+};

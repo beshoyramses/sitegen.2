@@ -1,147 +1,106 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import {
-  Settings,
-  BarChart,
-  MoreVertical,
-  ExternalLink,
-  LayoutTemplate,
-} from "lucide-react";
+"use client";
+
+import { format, set } from "date-fns";
+import Image from "next/image";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { formatRelativeTime } from "@/lib/utils";
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { MoreVertical } from "lucide-react";
 import { redirect } from "next/navigation";
-import Image from "next/image";
+import { deleteWebsite } from "@/lib/actions/website.actions";
+import { useState } from "react";
+import { toast } from "sonner";
 
-export function WebsiteCard({
-  website,
-  index,
-}: {
-  website: any;
-  index: number;
-}) {
-  const statusColor = (status: string) => {
-    switch (status) {
-      case "published":
-        return "bg-green-500";
-      case "draft":
-        return "bg-yellow-500";
-      default:
-        return "bg-gray-500";
-    }
+interface WebsiteCardProps {
+  website: {
+    id: string;
+    name: string;
+    domain: string;
+    description: string;
+    imageUrl: string;
+    createdAt: string;
+    updatedAt: string;
   };
+}
 
+export const WebsiteCard = ({ website }: WebsiteCardProps) => {
+  const [loading, setLoading] = useState(false);
   const handleClick = () => {
-    redirect("/dashboard/website/asdasdadad");
+   redirect(`/dashboard/website/${website.id}`);
   };
+
+  const handleWebsiteDelete = async () => {
+    try {
+      setLoading(true);
+      await deleteWebsite(website.id);
+      setLoading(false);
+      toast("Website deleted successfully")
+    } catch (error) {
+      toast.error("Failed to delete website");
+      setLoading(false);
+    }
+  }
 
   return (
-    <motion.div
-      className="border rounded-xl overflow-hidden hover:shadow-lg transition-shadow group"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
-      whileHover={{ y: -5 }}
+    <Card
+      className="h-full overflow-hidden transition-all hover:shadow-md cursor-pointer"
     >
-      <div className="relative" onClick={handleClick}>
+      <CardHeader className="p-0 border-b relative">
         {website.imageUrl ? (
-          <div className="h-50"> 
-            <Image src={website.imageUrl} alt="web" fill />
+          <div className="relative h-40 w-full">
+            <Image
+              src={website.imageUrl}
+              alt={website.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 25vw"
+            />
           </div>
         ) : (
-          <div className="flex justify-center items-center h-50">
-            <LayoutTemplate className="h-8 w-8"/>
+          <div className="bg-muted h-40 flex items-center justify-center">
+            <span className="text-muted-foreground">No Image</span>
           </div>
-          
         )}
 
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-2 right-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full w-8 h-8 bg-background/80 backdrop-blur-sm"
+              >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BarChart className="mr-2 h-4 w-4" />
-                <span>Analytics</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-500">
-                <span className="mr-2">🗑️</span>
-                <span>Delete</span>
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleWebsiteDelete}>Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </CardHeader>
 
-        <div className="absolute bottom-4 left-4 flex items-center">
-          <div
-            className={`w-3 h-3 rounded-full mr-2 ${statusColor(
-              website.status
-            )}`}
-          ></div>
-          <span className="text-xs font-medium capitalize">
-            {website.status}
-          </span>
-        </div>
-      </div>
+      <CardContent className="p-4">
+        <h3 className="font-semibold truncate" onClick={handleClick}>{website.name}</h3>
+        <p className="text-sm text-muted-foreground truncate" >
+          {website.domain}
+        </p>
+        <p className="mt-2 text-sm line-clamp-2">{website.description}</p>
+      </CardContent>
 
-      <div className="p-5">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-semibold text-lg mb-1">{website.name}</h3>
-            <p className="text-muted-foreground text-sm mb-3">
-              {website.domain}
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full"
-            asChild
-          >
-            <a
-              href={`https://${website.domain}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          </Button>
-        </div>
-
-        <div className="flex justify-between items-center mt-4">
-          <div>
-            <p className="text-xs text-muted-foreground">Updated</p>
-            <p className="text-sm font-medium">
-              {formatRelativeTime(website.updatedAt)}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground">Visitors</p>
-            <p className="text-sm font-medium">{website.visitors}</p>
-          </div>
-        </div>
-
-        <div className="mt-4 pt-4 border-t">
-          <p className="text-xs text-muted-foreground">Template</p>
-          <div className="flex items-center">
-            <div className="bg-muted p-1.5 rounded-lg mr-2">
-              <LayoutTemplate className="h-4 w-4" />
-            </div>
-            <span className="text-sm font-medium">{website.template}</span>
-          </div>
-        </div>
-      </div>
-    </motion.div>
+      <CardFooter className="p-4 pt-0 text-xs text-muted-foreground flex justify-between">
+        <span>
+          Created: {format(new Date(website.createdAt), "MMM dd, yyyy")}
+        </span>
+        <span>
+          Updated: {format(new Date(website.updatedAt), "MMM dd, yyyy")}
+        </span>
+      </CardFooter>
+    </Card>
   );
-}
+};
