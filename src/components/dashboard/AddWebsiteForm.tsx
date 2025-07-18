@@ -23,12 +23,7 @@ import { useEffect } from "react";
 
 type WebsiteFormValues = z.infer<typeof insertWebsiteSchema>;
 
-interface AddWebsiteFormProps {
-  onSuccess: () => void;
-  onCancel: () => void;
-}
-
-export function AddWebsiteForm({ onSuccess, onCancel }: AddWebsiteFormProps) {
+export function AddWebsiteForm() {
   const form = useForm<WebsiteFormValues>({
     resolver: zodResolver(insertWebsiteSchema),
     defaultValues: {
@@ -37,6 +32,7 @@ export function AddWebsiteForm({ onSuccess, onCancel }: AddWebsiteFormProps) {
       domain: "",
       imageUrl: "",
     },
+    mode: "onChange", // Enable instant validation
   });
 
   const [state, formAction, isPending] = useActionState(
@@ -62,15 +58,27 @@ export function AddWebsiteForm({ onSuccess, onCancel }: AddWebsiteFormProps) {
     if (state.success) {
       toast.success(state.message);
       form.reset();
-      onSuccess();
     } else {
       toast.error(state.message);
     }
-  }, [state]);
+  }, [state, form]);
+
+  // Prevent form submission if there are validation errors
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    form.trigger(); // Trigger validation on all fields
+    if (!form.formState.isValid) {
+      event.preventDefault();
+      toast.error("Please fix the errors in the form");
+    }
+  };
 
   return (
     <Form {...form}>
-      <form action={formAction} className="space-y-6">
+      <form 
+        action={formAction}
+        onSubmit={handleSubmit} 
+        className="space-y-6"
+      >
         <div className="grid grid-cols-1 gap-6">
           <FormField
             control={form.control}
@@ -148,15 +156,10 @@ export function AddWebsiteForm({ onSuccess, onCancel }: AddWebsiteFormProps) {
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isPending}
+          <Button 
+            type="submit" 
+            disabled={isPending || !form.formState.isValid}
           >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

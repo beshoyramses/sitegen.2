@@ -1,10 +1,12 @@
+"use client";
+
 import { CreditCard, LogOut, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 
-export function UserDropdown() {
+export function UserDropdown({user}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -16,7 +18,7 @@ export function UserDropdown() {
           <Avatar>
             <AvatarImage src="/user-avatar.jpg" alt="User avatar" />
             <AvatarFallback className="bg-primary text-primary-foreground font-medium">
-              JD
+              {user?.name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -28,9 +30,9 @@ export function UserDropdown() {
       >
         <div className="px-2 py-3">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
+            <p className="text-sm font-medium leading-none">{user.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              john@example.com
+              {user.email}
             </p>
           </div>
         </div>

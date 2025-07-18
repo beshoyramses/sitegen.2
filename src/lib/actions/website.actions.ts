@@ -4,6 +4,7 @@ import { z } from "zod";
 import { insertWebsiteSchema } from "../validators";
 import { verifiySession } from "../session";
 import prisma from "@/db/prisma";
+import { Website } from "@/types";
 
 export async function createWebsite(
   WebsiteData: z.infer<typeof insertWebsiteSchema>
@@ -15,8 +16,6 @@ export async function createWebsite(
 
   const validatedData = insertWebsiteSchema.parse({
     ...WebsiteData,
-    userId: session.userId,
-
   });
 
   if (!validatedData) {
@@ -24,7 +23,13 @@ export async function createWebsite(
   }
 
   const website = await prisma.website.create({
-    data: validatedData,
+    data: {
+      name: validatedData.name,
+      domain: validatedData.domain,
+      description: validatedData.description || "",
+      imageUrl: validatedData.imageUrl,
+      userId: session.userId as string,
+    },
   });
 
   if (!website) {
@@ -94,4 +99,31 @@ export async function deleteWebsite(websiteId: string) {
   });
 
   return { success: true, message: "Website deleted successfully" };
+}
+
+export async function updateWebsite(data: Website, websiteId: string) {
+  const session = await verifiySession();
+  if (!session.userId) {
+    throw new Error("User not authenticated");
+  }
+
+  const website = await prisma.website.findFirst({
+    where: { id: websiteId, userId: session.userId },
+  });
+
+  if (!website) {
+    throw new Error("Website not found or access denied");
+  }
+
+  const updatedWebsite = await prisma.website.update({
+    where: { id: websiteId },
+    data: {
+      name: data.name,
+      description: data.description,
+      domain: data.domain,
+      imageUrl: data.imageUrl,
+    },
+  });
+
+  return { success: true, message: "Website updated successfully", website: updatedWebsite };
 }

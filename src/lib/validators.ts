@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { id } from "zod/v4/locales";
 
 export const signInFormSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -16,5 +17,4 @@ export const insertWebsiteSchema = z.object({
   domain: z.string().min(1, "Domain is required"),
   description: z.string().optional(),
   imageUrl: z.string().url("Invalid image URL"),
-  userId: z.string().uuid(),
 });

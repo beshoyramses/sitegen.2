@@ -127,3 +127,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+/* Simplified class names without escaping */
+[data-state="open"] .mobile-sidebar {
+  animation: slideInFromLeft 0.3s ease-out forwards;
+}
+
+[data-state="closed"] .mobile-sidebar {
+  animation: slideOutToLeft 0.3s ease-in forwards;
+}
